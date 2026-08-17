@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log in to your account</title>
+    <style>
+        /* ----- Reset & Base ----- */
+        *,
+        ::backdrop,
+        :after,
+        :before {
+            box-sizing: border-box;
+            border: 0 solid;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --spacing: 0.25rem;
+            --content-primary: 0 0 0;
+            --content-secondary: 118 118 118;
+            --content-disabled-primary: 172 172 172;
+            --bg-primary: 255 255 255;
+            --bg-disabled-primary: 240 240 240;
+            --bg-tertiary: 240 240 240;
+            --border-primary: 208 211 214;
+            --accent-grey-500: 172 172 172;
+            --accent-grey-600: 118 118 118;
+            --shade-primary-100: 246 246 246;
+            --accent-green-400: 30 198 119;
+            --accent-green-500: 0 115 60;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            tab-size: 4;
+            line-height: 1.5;
+            font-family: var(--font-family);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            font-family: var(--font-family);
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            background-color: rgb(var(--bg-primary));
+            color: rgb(var(--content-primary));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ----- Layout Container ----- */
+        .login-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .login-card {
+            display: flex;
+            flex-direction: column;
+            gap: calc(var(--spacing) * 5);
+            width: 100%;
+            max-width: 480px;
+            flex-shrink: 0;
+            flex-grow: 1;
+            padding: calc(var(--spacing) * 6);
+        }
+
+        /* ----- Utility ----- */
+        .sr-only {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            border: 0 !important;
+        }
+
+        .text-body {
+            font-size: 1rem;
+            line-height: 1.375rem;
+        }
+
+        .text-content-primary {
+            color: rgb(var(--content-primary));
+        }
+        .text-content-secondary {
+            color: rgb(var(--content-secondary));
+        }
+        .text-content-disabled-primary {
+            color: rgb(var(--content-disabled-primary));
+        }
+        .text-xs {
+            font-size: 0.75rem;
+            line-height: 1;
+        }
+
+        /* ----- Logo - TOP LEFT, aligned with email input ----- */
+        .logo-wrapper {
+            padding: 0;
+            margin: 0;
+            display: block;
+            width: 100%;
+        }
+
+        .logo-wrapper img {
+            display: block;
+            height: 36px;
+            width: auto;
+            margin: 0;
+            /* Aligned to the left edge */;
+        }
+
+        /* ----- Form ----- */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: calc(var(--spacing) * 6);
+        }
+
+        .form-fields {
+            display: flex;
+            flex-direction: column;
+            gap: calc(var(--spacing) * 4);
+        }
+
+        label {
+            width: 100%;
+        }
+
+        /* ----- Input Container ----- */
+        .input-container {
+            position: relative;
+            width: 100%;
+            background-color: rgb(var(--bg-primary));
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: 2px solid rgb(var(--border-primary));
+            transition: box-shadow 0.15s ease, border-color 0.15s ease;
+            box-shadow: 0 0 0 0 transparent, 0 0 0 6px transparent;
+            height: 4rem;
+        }
+
+        .input-container:focus-within {
+            border-color: rgb(var(--content-primary));
+            box-shadow: 0 0 0 0 transparent, 0 0 0 6px rgb(var(--bg-tertiary));
+        }
+
+        .input-container:hover {
+            box-shadow: 0 0 0 0 transparent, 0 0 0 6px rgb(var(--bg-tertiary));
+        }
+
+        .input-eyelid {
+            position: absolute;
+            color: rgb(var(--content-secondary));
+            transition: all 0.15s ease;
+            font-size: 1rem;
+            line-height: 1.375rem;
+            top: 50%;
+            left: 1rem;
+            transform: translateY(-50%);
+            pointer-events: none;
+            transform-origin: left center;
+        }
+
+        .input-eyelid.up {
+            top: 0.45rem;
+            transform: translateY(0) scale(0.75);
+            opacity: 0.7;
+        }
+
+        .input-container input {
+            width: 100%;
+            flex: 1;
+            outline: none;
+            font-size: 1rem;
+            line-height: 1.375rem;
+            padding: 0;
+            background-color: transparent;
+            border: 0;
+            color: rgb(var(--content-primary));
+            margin-top: 0.5rem;
+        }
+
+        .input-container input::placeholder {
+            opacity: 0;
+        }
+
+        .input-container input:focus {
+            box-shadow: none;
+        }
+
+        .input-container input:focus::placeholder {
+            opacity: 1;
+        }
+
+        /* Password toggle */
+        .password-toggle {
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: rgb(var(--content-secondary));
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-left: 0.25rem;
+        }
+
+        .password-toggle:hover {
+            color: rgb(var(--content-primary));
+        }
+
+        .password-toggle svg {
+            width: 24px;
+            height: 24px;
+            display: block;
+        }
+
+        /* ----- Button ----- */
+        .btn-signin {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            line-height: 1.375rem;
+            font-weight: 600;
+            transform-origin: center;
+            transition: all 0.15s ease;
+            background-color: rgb(var(--bg-disabled-primary));
+            color: rgb(var(--content-disabled-primary));
+            padding: 0.75rem 2rem;
+            cursor: not-allowed;
+            border: none;
+            width: 100%;
+        }
+
+        .btn-signin.active {
+            background-color: rgb(var(--accent-green-400));
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .btn-signin.active:hover {
+            background-color: rgb(60, 205, 136);
+        }
+
+        .btn-signin.active:active {
+            transform: scale(0.98);
+        }
+
+        .sms-notice {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            color: rgb(var(--content-secondary));
+        }
+
+        /* ----- Links ----- */
+        .links-list {
+            list-style: none;
+            padding: 0.75rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: calc(var(--spacing) * 2);
+            font-weight: 700;
+        }
+
+        .links-list li a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            line-height: 1.375rem;
+            transform-origin: center;
+            transition: all 0.15s ease;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            color: rgb(var(--content-primary));
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            font-weight: 700;
+            font-family: inherit;
+        }
+
+        .links-list li a:hover {
+            color: rgb(var(--accent-grey-500));
+        }
+
+        .links-list li a:active {
+            background-color: rgb(var(--shade-primary-100));
+            border-radius: 0;
+            color: rgb(var(--accent-grey-500));
+            transform: scale(0.98);
+        }
+
+        /* ----- Footer ----- */
+        .footer {
+            padding-top: calc(var(--spacing) * 6);
+        }
+
+        .footer .legal {
+            font-size: 0.75rem;
+            line-height: 1;
+            color: rgb(var(--content-secondary));
+        }
+
+        .footer .legal p {
+            padding-bottom: 0.75rem;
+        }
+
+        .footer .legal p:last-child {
+            padding-bottom: 0;
+        }
+
+        /* ----- Responsive ----- */
+        @media (min-width: 640px) {
+            .login-card {
+                padding-bottom: 3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 1.5rem;
+            }
+            .input-container {
+                height: 3.5rem;
+            }
+            .input-container input {
+                font-size: 0.875rem;
+            }
+            .input-eyelid {
+                font-size: 0.875rem;
+            }
+            .logo-wrapper img {
+                height: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+
+            <!-- Hidden heading for screen readers -->
+            <h1 class="sr-only">Log in to your account</h1>
+
+            <!-- Logo - TOP LEFT, aligned with email input -->
+            <div class="logo-wrapper">
+                <img 
+                    width="125" 
+                    height="36" 
+                    alt="Logo" 
+                    src="https://chime-mobile-assets.prod-ext.chmfin.com/prod/v2/images/ck.logo.chime.chime_green.medium.registered.7f0b59b1062c@3x.png" 
+                />
+            </div>
+
+            <!-- Form -->
+            <form id="loginForm" autocomplete="off" novalidate>
+                <div class="form-fields">
+
+                    <!-- Email -->
+                    <label for="Email">
+                        <div class="input-container" data-testid="input-container">
+                            <span class="input-eyelid" data-testid="input-eyelid" id="emailEyelid">Email</span>
+                            <input
+                            id="Email"
+                            type="email"
+                            autofocus
+                            autocomplete="off"
+                            autocorrect="off"
+                            autocapitalize="off"
+                            spellcheck="false"
+                            class="text-content-primary"
+                            value=""
+                            />
+                        </div>
+                    </label>
+
+                    <!-- Password -->
+                    <div>
+                        <label for="Password">
+                            <div class="input-container" data-testid="input-container">
+                                <span class="input-eyelid" data-testid="input-eyelid" id="passwordEyelid">Password</span>
+                                <input
+                                id="Password"
+                                type="password"
+                                class="text-content-primary"
+                                value=""
+                                />
+                                <button class="password-toggle" type="button" aria-label="Show password" id="togglePassword">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M12 17C5 17 2 12 2 12C2 12 5 7 12 7C19.5 7 22 12 22 12C22 12 19 17 12 17ZM7.8172 14.7404C6.79139 14.338 5.95415 13.8223 5.28957 13.3111C4.6803 12.8424 4.21421 12.3755 3.88381 12C4.21421 11.6245 4.6803 11.1576 5.28957 10.6889C5.95415 10.1777 6.79139 9.66196 7.8172 9.25959C7.30053 10.0466 7 10.9882 7 12C7 13.0118 7.30053 13.9534 7.8172 14.7404ZM16.1828 14.7404C17.2086 14.338 18.0459 13.8223 18.7104 13.3111C19.3476 12.8209 19.8282 12.3327 20.1607 11.949C19.8706 11.586 19.4493 11.1304 18.8755 10.6713C18.1979 10.1293 17.2928 9.56974 16.1118 9.15443C16.6718 9.96211 17 10.9427 17 12C17 13.0118 16.6995 13.9534 16.1828 14.7404ZM12 8.5C10.067 8.5 8.5 10.067 8.5 12C8.5 13.933 10.067 15.5 12 15.5C13.933 15.5 15.5 13.933 15.5 12C15.5 10.067 13.933 8.5 12 8.5ZM14 12C14 13.1046 13.1046 14 12 14C10.8954 14 10 13.1046 10 12C10 10.8954 10.8954 10 12 10C13.1046 10 14 10.8954 14 12Z" fill="currentColor"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Sign In Button -->
+                <button class="btn-signin" id="signInBtn" type="submit" disabled>Sign in</button>
+
+                <!-- SMS Notice -->
+                <div class="sms-notice">By clicking "Sign in", you agree to receive SMS text messages to verify your identity</div>
+            </form>
+
+            <!-- Links -->
+            <ul class="links-list">
+                <li><a href="/forgot-email">Forgot your email address?</a></li>
+                <li><a href="/password-reset">Forgot your password?</a></li>
+                <li><a href="/enroll/account">Need to create an account? Sign up!</a></li>
+            </ul>
+
+            <!-- Footer -->
+            <div class="footer">
+                <div class="legal">
+                    <p>&copy; 2026 YourBank. All Rights Reserved.</p>
+                    <p>Banking Services provided by YourBank, N.A. The YourBank Visa&reg; Debit Card is issued by YourBank pursuant to a license from Visa U.S.A. Inc. and may be used everywhere Visa debit cards are accepted.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const emailInput = document.getElementById('Email');
+            const passwordInput = document.getElementById('Password');
+            const signInBtn = document.getElementById('signInBtn');
+            const toggleBtn = document.getElementById('togglePassword');
+            const emailEyelid = document.getElementById('emailEyelid');
+            const passwordEyelid = document.getElementById('passwordEyelid');
+
+            // ----- Floating label logic -----
+            function updateEyelid(input, eyelid) {
+                if (input.value.trim().length > 0) {
+                    eyelid.classList.add('up');
+                } else {
+                    eyelid.classList.remove('up');
+                }
+            }
+
+            emailInput.addEventListener('input', function() {
+                updateEyelid(emailInput, emailEyelid);
+                validateForm();
+            });
+
+            passwordInput.addEventListener('input', function() {
+                updateEyelid(passwordInput, passwordEyelid);
+                validateForm();
+            });
+
+            emailInput.addEventListener('blur', function() {
+                updateEyelid(emailInput, emailEyelid);
+            });
+            passwordInput.addEventListener('blur', function() {
+                updateEyelid(passwordInput, passwordEyelid);
+            });
+
+            emailInput.addEventListener('focus', function() {
+                if (emailInput.value.trim().length > 0) {
+                    emailEyelid.classList.add('up');
+                }
+            });
+            passwordInput.addEventListener('focus', function() {
+                if (passwordInput.value.trim().length > 0) {
+                    passwordEyelid.classList.add('up');
+                }
+            });
+
+            // ----- Toggle password visibility -----
+            let passwordVisible = false;
+            toggleBtn.addEventListener('click', function() {
+                passwordVisible = !passwordVisible;
+                passwordInput.type = passwordVisible ? 'text' : 'password';
+                toggleBtn.setAttribute('aria-label', passwordVisible ? 'Hide password' : 'Show password');
+            });
+
+            // ----- Form validation: enable/disable button -----
+            function validateForm() {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+                const isValid = email.length > 0 && password.length > 0;
+                signInBtn.disabled = !isValid;
+                if (isValid) {
+                    signInBtn.classList.add('active');
+                } else {
+                    signInBtn.classList.remove('active');
+                }
+            }
+
+            validateForm();
+
+            // ----- Form submission -----
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (signInBtn.disabled) return;
+
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                console.log('Sign in attempt:', { email, password });
+                alert('Sign in attempted!\n\nEmail: ' + email + '\nPassword: ' + password);
+            });
+
+            // ----- Auto-init for browser autofill -----
+            setTimeout(function() {
+                updateEyelid(emailInput, emailEyelid);
+                updateEyelid(passwordInput, passwordEyelid);
+                validateForm();
+            }, 100);
+
+            window.addEventListener('load', function() {
+                updateEyelid(emailInput, emailEyelid);
+                updateEyelid(passwordInput, passwordEyelid);
+                validateForm();
+            });
+
+        })();
+    </script>
+
+</body>
+</html>
